@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Venta</title>
+</head>
+<body>
+<h1>Registro de Venta</h1>
+<form id="venta-form" action="/RegistroVenta" method="post">
+    <div id="productos-container">
+        <div class="producto">
+            <label for="producto-select">Seleccionar Producto:</label>
+            <select id="producto-select" class="producto-select">
+                <option value="">Selecciona un producto</option>
+            </select>
+            <label for="nombre">Nombre del Producto:</label>
+            <input type="text" id="nombre" name="nombre" required readonly>
+            <label for="codigo">Código:</label>
+            <input type="number" id="codigo" name="codigo" required readonly>
+            <label for="precio">Precio:</label>
+            <input type="number" id="precio" name="precio" required readonly>
+            <label for="cantidad">Cantidad:</label>
+            <input type="number" id="cantidad" name="cantidad" required>
+        </div>
+    </div>
+    <button type="button" onclick="agregarProducto()">Agregar Producto</button>
+    <br>
+    <label for="total_venta">Total Venta:</label>
+    <input type="number" id="total_venta" name="total_venta" required>
+    <br>
+    <button type="submit">Registrar Venta</button>
+</form>
+
+<script>
+    async function fetchProductos() {
+        const response = await fetch('/productos');
+        const productos = await response.json();
+        const select = document.querySelector('.producto-select');
+
+        productos.forEach(producto => {
+            const option = document.createElement('option');
+            option.value = JSON.stringify(producto);
+            option.text = producto.nombre;
+            select.appendChild(option);
+        });
+    }
+
+    function agregarProducto() {
+        const container = document.getElementById('productos-container');
+        const productoDiv = document.createElement('div');
+        productoDiv.classList.add('producto');
+
+        productoDiv.innerHTML = `
+                <label for="producto-select">Seleccionar Producto:</label>
+                <select class="producto-select">
+                    <option value="">Selecciona un producto</option>
+                </select>
+                <label for="nombre">Nombre del Producto:</label>
+                <input type="text" name="nombre" required readonly>
+                <label for="codigo">Código:</label>
+                <input type="number" name="codigo" required readonly>
+                <label for="precio">Precio:</label>
+                <input type="number" name="precio" required readonly>
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" name="cantidad" required>
+            `;
+
+        container.appendChild(productoDiv);
+
+        fetchProductos();
+        attachSelectListener(productoDiv);
+    }
+
+    function attachSelectListener(productoDiv) {
+        const select = productoDiv.querySelector('.producto-select');
+        select.addEventListener('change', () => {
+            const selectedProducto = JSON.parse(select.value);
+            productoDiv.querySelector('[name="nombre"]').value = selectedProducto.nombre;
+            productoDiv.querySelector('[name="codigo"]').value = selectedProducto.codigo;
+            productoDiv.querySelector('[name="precio"]').value = selectedProducto.precio;
+        });
+    }
+
+    document.getElementById('venta-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const productos = [];
+        let total_venta = 0;
+        const productoElements = document.querySelectorAll('.producto');
+
+        productoElements.forEach((element) => {
+            productos.push({
+                nombre: element.querySelector('[name="nombre"]').value,
+                codigo: parseInt(element.querySelector('[name="codigo"]').value),
+                precio: parseInt(element.querySelector('[name="precio"]').value),
+                cantidad: parseInt(element.querySelector('[name="cantidad"]').value),
+                total: parseInt(element.querySelector('[name="precio"]').value) * parseInt(element.querySelector('[name="cantidad"]').value)
+            });
+        });
+
+        productos.map(function (element) {
+            total_venta = total_venta + element.total;
+        })
+
+        const data = {
+            productos,
+            total_venta
+        };
+
+        const response = await fetch('/RegistroVenta', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        alert(result);
+    });
+
+    fetchProductos();
+    attachSelectListener(document.querySelector('.producto'));
+</script>
+</body>
+</html>

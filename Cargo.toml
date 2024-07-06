@@ -1,0 +1,21 @@
+[package]
+name = "prueba_tecnica"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.5.1"
+actix-files = "0.6.5"
+mongodb = "2.8.2"
+dotenvy = "0.15.7"
+features = "0.10.0"
+futures = "0.3.30"
+serde_json = "1.0.115"
+chrono = "0.4.38"
+rand = "0.8.5"
+tera = "1.19.1"
+serde = { version = "1.0.197", features = ["derive"] }
+bson = { version = "2.10.0", features = ["chrono-0_4"] }
+watch = "0.2.3"

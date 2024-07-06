@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Compraventa</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/static/css/styles.css">
+    </head>
+    <body>
+
+        <div>
+
+            <div class="card-header mt-3 text-center">
+                <h1 class="jumbotron-heading">COMPRAVENTA</h1>
+                <p class="lead text-muted">Bienvenido a la compraventa de Marcela!</p>
+            </div>
+
+            <div class="container row m-3">
+
+                <div>
+
+                    <a href="/Registros">
+                        <div id="card-1" class="card col m-2 text-center text-decoration-none">
+                            <button>Registros</button>
+                        </div>
+                    </a>
+
+
+                    <a href="/Inventario">
+                        <div id="card-2" class="card col m-2 text-center text-decoration-none">
+                            <button>Inventario</button>
+                        </div>
+                    </a>
+
+                    <a href="/Indicadores">
+                        <div id="card-3" class="card col m-2 text-center text-decoration-none">
+                            <button>Indicadores</button>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <div class="text-center mb-4">
+                    <a href="/">
+                        <button type="submit" id="button" class="btn btn-rounded btn-info">Volver</button>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
+    </body>
+</html>

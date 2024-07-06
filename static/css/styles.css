@@ -1,0 +1,58 @@
+.btn {
+    box-shadow: 2px 2px 2px 1px #7f7f7f !important;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 4px 3px 3px 2px #4e4e4e !important;
+}
+
+.card {
+    max-width: 70% !important;
+    margin-top: 5% !important;
+    margin-bottom: 5% !important;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+#card-1 {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 200px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#card-2 {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 200px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#card-3 {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 200px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#card-1:hover, #card-2:hover, #card-3:hover {
+    background-color: #0dcaf0;
+}

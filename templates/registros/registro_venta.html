@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Venta</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+    <div class="card">
+        <form id="venta-form" action="/RegistroVenta" method="post">
+
+            <div class="card-header">
+                <div class="d-flex justify-content-center mb-3">
+                    <h1>Registro de Venta</h1>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div id="productos-container">
+                    <div class="producto" style="padding: 20px">
+                        <div class="row mb-1">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="producto-select-1">Seleccionar Producto:</label>
+                                <select id="producto-select-1" class="producto-select form-control">
+                                    <option value="">Selecciona un producto</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="nombre">Nombre del Producto:</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <label for="codigo">Código:</label>
+                                <input type="number" class="form-control" id="codigo" name="codigo" required readonly>
+                            </div>
+
+                            <div class="col">
+                                <label for="precio">Precio:</label>
+                                <input type="number" class="form-control" id="precio" name="precio" required readonly>
+                            </div>
+
+                            <div class="col">
+                                <label for="cantidad">Cantidad:</label>
+                                <input type="number" class="form-control cantidad" id="cantidad" name="cantidad" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-rounded btn-info" onclick="agregarProducto()">Agregar Producto</button>
+
+                    <div class="valorTotal" style="margin-left: 5%">
+                        <h3>Total: $<span id="total-span"> 0</span></h3>
+                        <input type="hidden" id="total" name="total">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-rounded btn-success">Registrar Venta</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="/">
+            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script>
+        async function fetchProductos() {
+            const response = await fetch('/Productos');
+            return response.json();
+        }
+
+        async function loadProducts(id) {
+            const select = document.getElementById(id);
+            const products = await fetchProductos();
+
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify(product);
+                option.text = product.nombre;
+                select.appendChild(option);
+            });
+        }
+
+        function agregarProducto() {
+            const container = document.getElementById('productos-container');
+            const productoDiv = document.createElement('div');
+            let idSelectNew = document.getElementsByClassName('producto-select').length + 1;
+
+            productoDiv.classList.add('producto');
+            productoDiv.classList.add('row');
+            productoDiv.style.padding = "20px";
+
+            productoDiv.innerHTML = `
+                <div class="row mb-1">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <label for="producto-select-${idSelectNew}">Seleccionar Producto:</label>
+                        <select id="producto-select-${idSelectNew}" class="producto-select form-control">
+                            <option value="">Selecciona un producto</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                        <label for="nombre">Nombre del Producto:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="codigo">Código:</label>
+                        <input type="number" class="form-control" id="codigo" name="codigo" required readonly>
+                    </div>
+
+                    <div class="col">
+                        <label for="precio">Precio:</label>
+                        <input type="number" class="form-control" id="precio" name="precio" required readonly>
+                    </div>
+
+                    <div class="col">
+                        <label for="cantidad">Cantidad:</label>
+                        <input type="number" class="form-control cantidad" id="cantidad" name="cantidad" required>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(productoDiv);
+
+            loadProducts("producto-select-" + idSelectNew);
+            attachSelectListener(productoDiv);
+        }
+
+        function attachSelectListener(productoDiv) {
+            const select = productoDiv.querySelector('.producto-select');
+            select.addEventListener('change', () => {
+                const selectedProducto = JSON.parse(select.value);
+                productoDiv.querySelector('[name="nombre"]').value = selectedProducto.nombre;
+                productoDiv.querySelector('[name="codigo"]').value = selectedProducto.codigo;
+                productoDiv.querySelector('[name="precio"]').value = selectedProducto.precio_venta;
+            });
+        }
+
+        document.getElementById('productos-container').addEventListener('input', (event) => {
+            if (event.target.classList.contains('cantidad')) {
+                const productos = [];
+                const productoElements = document.querySelectorAll('.producto');
+
+                productoElements.forEach((element) => {
+                    let cantidad = element.querySelector('[name="cantidad"]').value == "" ? 0 : element.querySelector('[name="cantidad"]').value;
+                    productos.push({
+                        precio: parseInt(element.querySelector('[name="precio"]').value),
+                        cantidad: parseInt(cantidad)
+                    });
+                });
+
+                const total = productos.reduce((total_venta, element) => total_venta + (element.precio * element.cantidad), 0);
+
+                document.getElementById("total-span").textContent = total;
+                document.getElementById("total").value = total;
+            }
+        });
+
+        document.getElementById('venta-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            console.log("hola");
+            const formData = new FormData(event.target);
+            const productos = [];
+            const productoElements = document.querySelectorAll('.producto');
+            const total_venta = parseInt(document.getElementById("total").value);
+
+            productoElements.forEach((element) => {
+                productos.push({
+                    nombre: element.querySelector('[name="nombre"]').value,
+                    codigo: parseInt(element.querySelector('[name="codigo"]').value),
+                    precio: parseInt(element.querySelector('[name="precio"]').value),
+                    cantidad: parseInt(element.querySelector('[name="cantidad"]').value),
+                    total: parseInt(element.querySelector('[name="precio"]').value) * parseInt(element.querySelector('[name="cantidad"]').value)
+                });
+            });
+
+            const data = {
+                productos,
+                total_venta
+            };
+
+            const response = await fetch('/RegistroVenta', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            alert(result);
+        });
+
+        loadProducts("producto-select-1");
+        attachSelectListener(document.querySelector('.producto'));
+    </script>
+</body>
+</html>

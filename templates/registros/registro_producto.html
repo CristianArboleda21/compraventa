@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Producto</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+    <div class="card">
+
+        <div class="card-header">
+            <div class="d-flex justify-content-center mb-3">
+                <h1>Registro de Producto</h1>
+            </div>
+        </div>
+
+        <form id="product-form" action="/RegistroProducto" method="post">
+
+            <div class="card-body">
+                <div class="row">
+                    <label for="nombre" class="col">Nombre del Producto:</label>
+                    <input type="text" class="form-control col" id="nombre" name="nombre" required>
+                </div>
+            </div>
+
+            <div class="card-footer text-center m-3 p-3">
+                <button type="submit" class="btn btn-rounded btn-success">Registrar Producto</button>
+            </div>
+
+        </form>
+
+
+    </div>
+
+    <div class="text-center mb-4 mt-3">
+        <a href="/Inventario">
+            <button type="submit" id="button" class="btn btn-rounded btn-info">Volver</button>
+        </a>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('product-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                nombre: formData.get('nombre')
+            };
+
+            const response = await fetch('/RegistroProducto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            //alert(result)
+
+            Swal.fire({
+                icon: result == "Producto creado" ? "success" : "warning",
+                title: result == "Producto creado" ? "¡Registrado!" : "¡No se pudo crear!",
+                text: result,
+                showConfirmButton: false,
+                timer: 2500
+            });
+
+        });
+    </script>
+</body>
+</html>
