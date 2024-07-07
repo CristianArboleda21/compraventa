@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Indicadores de Ventas</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+    <div class="row d-flex justify-content-center">
+        <div class="card col-12">
+            <div class="card-header text-center">
+                <h1>Indicadores de Ventas</h1>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <label>Fecha inicial: </label>
+                        <input type="date" id="fecha_inicial" class="form-control">
+                    </div>
+
+                    <div class="col">
+                        <label>Fecha final: </label>
+                        <input type="date" id="fecha_final" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-center">
+                <button class="btn btn-rounded btn-success" id="btn-consultar" onclick="tableVentas()">Consultar</button>
+            </div>
+        </div>
+
+        <div class="col-12 d-flex justify-content-center">
+            <table class="table table-striped text-center" id="table-indicator" aria-describedby="table-indicator">
+                <thead>
+                <tr>
+                    <th scope="col">Códogo de venta</th>
+                    <th scope="col">Fecha de Venta</th>
+                    <th scope="col">Total Venta</th>
+                </tr>
+                </thead>
+
+                <tbody id="body-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="/indicadores">
+            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+        </a>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Detalle de venta</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body d-flex justify-content-center">
+                    <div class="card row">
+                        <div class="col text-center mb-3 mt-3">
+                            <label for="codigo_producto">Código de venta</label>
+                            <input type="number" class="form-control" id="codigo_producto">
+                        </div>
+
+                        <div class="col text-center mb-3">
+                            <label for="fecha_venta_modal">Fecha de venta</label>
+                            <input type="text" class="form-control" id="fecha_venta_modal">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex justify-content-center mb-auto">
+                    <table class="table table-striped text-center" id="table-modal" aria-describedby="table-indicator">
+                        <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Código</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Total Producto</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="body-table-modal"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+
+    <script>
+
+    async function fetchVentas() {
+        let date_init = document.getElementById("fecha_inicial").value != "" ? document.getElementById("fecha_inicial").value + "T00:00:00Z" : "";
+        let date_end = document.getElementById("fecha_final").value != "" ? document.getElementById("fecha_final").value + "T23:59:59Z" : "";
+
+        const response = await fetch('/indicadores/ventasCompras?date_init='+date_init+'&date_end='+date_end);
+        return  response.json();
+    }
+
+    async function tableVentas() {
+
+        const data = await fetchVentas();
+        let bodyTable = '';
+
+        data.ventas.forEach(resp => {
+
+            let date = new Date(parseInt(resp.fecha_venta.$date.$numberLong, 10));
+            date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
+
+            bodyTable += `
+                    <tr>
+                        <td>${resp.codigo_venta}</td>
+                        <td>${date}</td>
+                        <td>${resp.total_venta}</td>
+                        <td>
+                            <button class="btn btn-rounded btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="modal('${resp._id.$oid}')">Ver detalle</button>
+                        </td>
+                    </tr>
+                `;
+
+        })
+
+        bodyTable += `
+                <tr>
+                    <td></td>
+                    <td>Total:</td>
+                    <td style="color: #35a817">${data.total_ventas}</td>
+                </tr>
+            `;
+
+        document.getElementById("body-table").innerHTML = bodyTable;
+    }
+
+    async function modal(id_venta) {
+
+        const response = await fetch('/ventaById/' + id_venta);
+        const data = await response.json();
+
+        document.getElementById("codigo_producto").value = data.codigo_venta;
+        let date = new Date(parseInt(data.fecha_venta.$date.$numberLong, 10));
+        date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
+        document.getElementById("fecha_venta_modal").value = date;
+
+        let bodyTableModal = '';
+
+        data.productos.forEach(resp => {
+
+                bodyTableModal += `
+                    <tr>
+                        <td>${resp.nombre}</td>
+                        <td>${resp.codigo}</td>
+                        <td>${resp.precio}</td>
+                        <td>${resp.cantidad}</td>
+                        <td>${resp.total}</td>
+                    </tr>
+                `;
+
+        })
+
+        bodyTableModal += `
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Total:</td>
+                    <td style="color: #35a817">${data.total_venta}</td>
+                </tr>
+            `;
+
+        document.getElementById("body-table-modal").innerHTML = bodyTableModal;
+
+    }
+
+
+</script>
+
+</body>
+</html>

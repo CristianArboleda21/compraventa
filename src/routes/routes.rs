@@ -12,7 +12,7 @@ async fn index(tera: web::Data<Tera>) -> HttpResponse {
 }
 
 // Registros
-#[get("/Registros")]
+#[get("/registros")]
 async fn registros(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -21,7 +21,7 @@ async fn registros(tera: web::Data<Tera>) -> HttpResponse {
     
 }
 
-#[get("/Registros/RegistrarCompra")]
+#[get("/registros/registrarCompra")]
 async fn registrar_compra(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -30,7 +30,7 @@ async fn registrar_compra(tera: web::Data<Tera>) -> HttpResponse {
 
 }
 
-#[get("/Registros/RegistrarVenta")]
+#[get("/registros/registrarVenta")]
 async fn registrar_venta(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -42,7 +42,7 @@ async fn registrar_venta(tera: web::Data<Tera>) -> HttpResponse {
 // Inventario
 
 // Ruta para registrar un producto en el inventario
-#[get("/Inventario")]
+#[get("/inventario")]
 async fn inventario(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -51,7 +51,7 @@ async fn inventario(tera: web::Data<Tera>) -> HttpResponse {
 
 }
 
-#[get("/Inventario/RegistroProd")]
+#[get("/inventario/registroProd")]
 async fn registro_productos(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -60,7 +60,7 @@ async fn registro_productos(tera: web::Data<Tera>) -> HttpResponse {
 
 }
 
-#[get("/Inventario/PrecioVenta")]
+#[get("/inventario/precioVenta")]
 async fn precio_venta(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -71,7 +71,7 @@ async fn precio_venta(tera: web::Data<Tera>) -> HttpResponse {
 
 
 // Indicadores
-#[get("/Indicadores")]
+#[get("/indicadores")]
 async fn indicadores(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -80,7 +80,7 @@ async fn indicadores(tera: web::Data<Tera>) -> HttpResponse {
 
 }
 
-#[get("/Indicadores/Inversion")]
+#[get("/indicadores/inversion")]
 async fn indicadores_inversion(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();
@@ -89,7 +89,7 @@ async fn indicadores_inversion(tera: web::Data<Tera>) -> HttpResponse {
 
 }
 
-#[get("/Indicadores/Ventas")]
+#[get("/indicadores/ventas")]
 async fn indicadores_ventas(tera: web::Data<Tera>) -> HttpResponse {
 
     let mut context = Context::new();

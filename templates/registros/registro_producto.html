@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <form id="product-form" action="/RegistroProducto" method="post">
+        <form id="product-form" action="/registroProducto" method="post">
 
             <div class="card-body">
                 <div class="row">
@@ -36,7 +36,7 @@
     </div>
 
     <div class="text-center mb-4 mt-3">
-        <a href="/Inventario">
+        <a href="/inventario">
             <button type="submit" id="button" class="btn btn-rounded btn-info">Volver</button>
         </a>
     </div>
@@ -54,7 +54,7 @@
                 nombre: formData.get('nombre')
             };
 
-            const response = await fetch('/RegistroProducto', {
+            const response = await fetch('/registroProducto', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

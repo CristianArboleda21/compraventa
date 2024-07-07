@@ -5,7 +5,7 @@ use rand::Rng;
 
 use crate::models::models::{Compras, ComprasPost, Productos};
 
-#[post("/RegistroCompra")]
+#[post("/registroCompra")]
 pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Json<ComprasPost>) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");

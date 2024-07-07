@@ -5,26 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Compraventa</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
 
-<section class="jumbotron text-center">
-    <div class="container">
-        
-        <h1 class="jumbotron-heading">Registros de ventas y compras</h1>
+    <div>
 
-        <a href="/Registros/RegistrarCompra">
-            <button>Registrar compras</button>
-        </a>
+        <div class="card-header mt-3 text-center">
+            <h1>Registros de ventas y compras</h1>
+        </div>
 
-        <a href="/Registros/RegistrarVenta">
-            <button>Registrar ventas</button>
-        </a>
-        
+        <div class="container row m-3">
+
+            <a href="/registros/registrarCompra" id="card-1" class="card col m-2 text-center text-decoration-none">
+                <div>Registrar compras</div>
+            </a>
+
+            <a href="/registros/registrarVenta" id="card-2" class="card col m-2 text-center text-decoration-none">
+                <div>Registrar ventas</div>
+            </a>
+
+
+        </div>
+
+        <div class="card-footer">
+            <div class="text-center mb-4">
+                <a href="/">
+                    <button type="submit" id="button" class="btn btn-rounded btn-info">Volver</button>
+                </a>
+            </div>
+        </div>
+
     </div>
-</section>
 
 
-<script src="/static/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
 </body>
 </html>

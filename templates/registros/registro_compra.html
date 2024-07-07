@@ -3,46 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <title>Registro de Compra</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-<h1>Registro de Compra</h1>
-<form id="purchase-form" action="/RegistroCompra" method="post">
 
-    <label for="nombre">Nombre del Producto:</label>
-    <input type="text" id="nombre" name="nombre" required>
+    <div class="card">
 
-    <label for="cantidad">Cantidad:</label>
-    <input type="number" id="cantidad" name="cantidad" required>
+        <div class="card-header text-center">
+            <h1>Registro de Compra</h1>
+        </div>
 
-    <label for="precio_unidad">Precio Unidad:</label>
-    <input type="number" id="precio_unidad" name="precio_unidad" required>
+        <form id="purchase-form" action="/registroCompra" method="post">
 
-    <br>
-    <button type="submit">Registrar Compra</button>
+            <div class="card-body">
 
-</form>
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <label for="nombre">Nombre del Producto:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
 
-<script>
-    document.getElementById('purchase-form').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = {
-            nombre: formData.get('nombre'),
-            cantidad: parseInt(formData.get('cantidad')),
-            precio_unidad: parseInt(formData.get('precio_unidad'))
-        };
+                <div class="col mt-2">
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                </div>
 
-        const response = await fetch('/RegistroCompra', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+                <div class="col mt-2">
+                    <label for="precio_unidad">Precio Unidad:</label>
+                    <input type="number" class="form-control" id="precio_unidad" name="precio_unidad" required>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-rounded btn-success">Registrar Compra</button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="/registros">
+            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('purchase-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {
+                nombre: formData.get('nombre'),
+                cantidad: parseInt(formData.get('cantidad')),
+                precio_unidad: parseInt(formData.get('precio_unidad'))
+            };
+
+            const response = await fetch('/registroCompra', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if( result == "Se actualizo la cantidad de productos en el inventario y se registro la compra" ) {
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Todo salio bien!",
+                    text: result,
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+
+            } else if ( result == "Producto creado y compra registrada" ) {
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Todo salio bien!",
+                    text: result,
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+
+            } else {
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "¡Opps algo salio mal!",
+                    text: result,
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+
+            }
+
         });
-
-        const result = await response.json();
-        alert(result);
-    });
-</script>
+    </script>
 </body>
 </html>

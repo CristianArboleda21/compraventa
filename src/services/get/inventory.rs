@@ -5,7 +5,7 @@ use tera::{Context, Tera};
 
 use crate::models::models::Invetario;
 
-#[get("/Inventario/ProductosInventario")]
+#[get("/inventario/productosInventario")]
 pub async fn inventory(client: web::Data<mongodb::Client>, tera: web::Data<Tera>) -> HttpResponse {
     
     let db: Database = client.database("tienda_online");
@@ -25,7 +25,7 @@ pub async fn inventory(client: web::Data<mongodb::Client>, tera: web::Data<Tera>
                         return HttpResponse::InternalServerError().json(e.to_string());
                     }
                 };
-
+                
                 let codigo = result.get_i32("codigo").unwrap();
                 let cantidad = result.get_i32("cantidad").unwrap();
                 let precio_venta = result.get_i32("precio_venta").unwrap();
@@ -37,9 +37,9 @@ pub async fn inventory(client: web::Data<mongodb::Client>, tera: web::Data<Tera>
                     precio_venta
                 };
                 
-                lista_productos.push(producto)    
+                lista_productos.push(producto);
             }
-
+            
             context.insert("productos", &lista_productos);
             let resp = tera.render("inventario/productos_inventario.html", &context).unwrap();
             HttpResponse::Ok().body(resp)

@@ -3,7 +3,7 @@ use mongodb::{ Database, Collection, bson::{Document, doc} };
 use futures::TryStreamExt;
 
 
-#[get("/Productos")]
+#[get("/productos")]
 pub async fn products(client: web::Data<mongodb::Client>) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");

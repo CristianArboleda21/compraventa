@@ -67,3 +67,26 @@ pub struct Invetario {
 pub struct ActualizacionPrecioVenta {
     pub precio_venta: i32
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Params {
+    pub date_init: String,
+    pub date_end: String
+}
+#[derive(Serialize, Deserialize, Clone)]
+pub struct IndicadorCompra {
+    pub nombre: String,
+    pub codigo: i32,
+    pub cantidad: i32,
+    pub total_compra: i32,
+    pub fecha_compra: DateTime
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct IndicadorVenta {
+    pub productos: String,
+    pub codigo: i32,
+    pub cantidad: i32,
+    pub total_compra: i32,
+    pub fecha_compra: DateTime
+}
