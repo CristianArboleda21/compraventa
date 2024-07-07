@@ -3,50 +3,50 @@ use mongodb::{ Database, Collection, bson::{Document, doc} };
 use futures::TryStreamExt;
 use tera::{Context, Tera};
 
-use crate::models::models::Invetario;
+use crate::models::models::Invetory;
 
 #[get("/inventario/productosInventario")]
 pub async fn inventory(client: web::Data<mongodb::Client>, tera: web::Data<Tera>) -> HttpResponse {
     
     let db: Database = client.database("tienda_online");
-    let productos: Collection<Document> = db.collection("productos");
+    let products: Collection<Document> = db.collection("products");
     let mut context = Context::new();
     
-    let mut lista_productos = [].to_vec();
+    let mut list_products = [].to_vec();
     
-    match productos.find(None, None).await { 
-        Ok(mut productos) => {
+    match products.find(None, None).await { 
+        Ok(mut products) => {
             
-            while let Some(result) = productos.try_next().await.expect("error") {
+            while let Some(result) = products.try_next().await.expect("error") {
 
-                let nombre: String = match result.get_str("nombre").unwrap().parse() {
-                    Ok(nombre) => nombre,
+                let name: String = match result.get_str("name").unwrap().parse() {
+                    Ok(name) => name,
                     Err(e) => {
                         return HttpResponse::InternalServerError().json(e.to_string());
                     }
                 };
                 
-                let codigo = result.get_i32("codigo").unwrap();
-                let cantidad = result.get_i32("cantidad").unwrap();
-                let precio_venta = result.get_i32("precio_venta").unwrap();
+                let code = result.get_i32("code").unwrap();
+                let amount = result.get_i32("amount").unwrap();
+                let price_sale = result.get_i32("price_sale").unwrap();
                 
-                let producto = Invetario {
-                    nombre,
-                    codigo,
-                    cantidad,
-                    precio_venta
+                let product = Invetory {
+                    name,
+                    code,
+                    amount,
+                    price_sale
                 };
                 
-                lista_productos.push(producto);
+                list_products.push(product);
             }
             
-            context.insert("productos", &lista_productos);
+            context.insert("products", &list_products);
             let resp = tera.render("inventario/productos_inventario.html", &context).unwrap();
             HttpResponse::Ok().body(resp)
             
         }
-        Err(e) => {
-            HttpResponse::InternalServerError().json(e.to_string())
+        Err(_) => {
+            HttpResponse::InternalServerError().json("Error obteniendo los productos para el inventario")
         }
     }
     

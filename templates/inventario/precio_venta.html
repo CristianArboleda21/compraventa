@@ -10,7 +10,7 @@
 
     <div class="card">
 
-        <form id="actualizar-precio-venta-form">
+        <form id="update-price-sale-form">
 
             <div class="card-header">
                 <div class="d-flex justify-content-center mb-3">
@@ -23,33 +23,33 @@
                 <div class="row">
 
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <label for="producto-select">Seleccionar Producto:</label>
-                        <select id="producto-select" class="producto-select form-control">
+                        <label for="product-select">Seleccionar Producto:</label>
+                        <select id="product-select" class="product-select form-control">
                             <option value="">Selecciona un producto</option>
                         </select>
                     </div>
 
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <label for="nombre">Nombre del Producto:</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required readonly>
+                        <label for="name">Nombre del Producto:</label>
+                        <input type="text" class="form-control" id="name" name="name" required readonly>
                     </div>
 
                 </div>
 
                 <div class="row">
                     <div class="col">
-                        <label for="codigo">Código:</label>
-                        <input type="number" class="form-control" id="codigo" name="codigo" required readonly>
+                        <label for="code">Código:</label>
+                        <input type="number" class="form-control" id="code" name="code" required readonly>
                     </div>
 
                     <div class="col">
-                        <label for="precio">Precio:</label>
-                        <input type="number" class="form-control" id="precio" name="precio" required readonly>
+                        <label for="price">Precio:</label>
+                        <input type="number" class="form-control" id="price" name="price" required readonly>
                     </div>
 
                     <div class="col">
-                        <label for="nuevo_precio">Nuevo Precio:</label>
-                        <input type="number" class="form-control" id="nuevo_precio" name="nuevo_precio" required>
+                        <label for="new_price">Nuevo Precio:</label>
+                        <input type="number" class="form-control" id="new_price" name="new_price" required>
                     </div>
 
                 </div>
@@ -75,45 +75,45 @@
     <script src="/static/js/bootstrap.min.js"></script>
 
     <script>
-        async function fetchProductos() {
+        async function fetchProducts() {
             const response = await fetch('/productos');
             return response.json();
         }
 
         async function loadProducts(id) {
             const select = document.getElementById(id);
-            const products = await fetchProductos();
+            const products = await fetchProducts();
             console.log(products);
 
             products.forEach(product => {
                 const option = document.createElement('option');
                 option.value = JSON.stringify(product);
                 option.value = product._id.$oid;
-                option.text = product.nombre;
-                option.dataset.codigo = product.codigo;
-                option.dataset.precio = product.precio_venta;
+                option.text = product.name;
+                option.dataset.code = product.code;
+                option.dataset.price = product.price_sale;
                 select.appendChild(option);
             });
         }
 
-        document.getElementById('producto-select').addEventListener('change', function() {
+        document.getElementById('product-select').addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
-            document.getElementById('nombre').value = selectedOption.text;
-            document.getElementById('codigo').value = selectedOption.dataset.codigo;
-            document.getElementById('precio').value = selectedOption.dataset.precio;
+            document.getElementById('name').value = selectedOption.text;
+            document.getElementById('code').value = selectedOption.dataset.code;
+            document.getElementById('price').value = selectedOption.dataset.price;
         });
 
-        document.getElementById('actualizar-precio-venta-form').addEventListener('submit', async (event) => {
+        document.getElementById('update-price-sale-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const productoId = document.getElementById('producto-select').value;
-            const nuevoPrecio = document.getElementById('nuevo_precio').value;
+            const productId = document.getElementById('product-select').value;
+            const newPrice = document.getElementById('new_price').value;
 
-            const response = await fetch(`/actualizarPrecioVenta/${productoId}`, {
+            const response = await fetch(`/actualizarPrecioVenta/${productId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ precio_venta: parseInt(nuevoPrecio) })
+                body: JSON.stringify({ price_sale: parseInt(newPrice) })
             });
 
             const result = await response.json();
@@ -129,8 +129,8 @@
 
         });
 
-        fetchProductos();
-        loadProducts("producto-select");
+        fetchProducts();
+        loadProducts("product-select");
     </script>
 </body>
 </html>

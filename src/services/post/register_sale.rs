@@ -3,33 +3,32 @@ use chrono::Utc;
 use mongodb::{ Database, Collection, bson::{Document, doc} };
 use rand::Rng;
 
-use crate::models::models::{ Ventas, VentasPost };
-use crate::services::get::get_products::products;
+use crate::models::models::{ Sales, SalesPost };
 
 #[post("/registroVenta")]
-pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<VentasPost>) -> HttpResponse {
+pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<SalesPost>) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");
-    let ventas: Collection<Document> = db.collection("ventas");
-    let productos: Collection<Document> = db.collection("productos");
+    let sales: Collection<Document> = db.collection("sales");
+    let products: Collection<Document> = db.collection("products");
 
     let mut random = rand::thread_rng();
-    let codigo_venta = random.gen_range(1000..9999);
+    let code_sale = random.gen_range(1000..9999);
 
-    let new_venta = Ventas {
-        productos: data.productos.clone(),
-        codigo_venta,
-        fecha_venta: bson::DateTime::from_chrono(Utc::now()),
-        total_venta: data.total_venta
+    let new_sale = Sales {
+        products: data.products.clone(),
+        code_sale,
+        date_sale: bson::DateTime::from_chrono(Utc::now()),
+        total_sale: data.total_sale
     };
 
-    let doc_ventas = bson::to_document(&new_venta).unwrap();
+    let doc_sales = bson::to_document(&new_sale).unwrap();
     
-    let mut resta: i32 = 0;
+    let mut subtract: i32 = 0;
     
-    for prod in data.productos.clone() {
+    for prod in data.products.clone() {
         
-        let producto = match productos.find_one(doc! {"nombre" : prod.nombre}, None).await {
+        let product = match products.find_one(doc! {"name" : prod.name}, None).await {
             Ok(Some(doc)) => { doc }
             Ok(None) => {
                 return HttpResponse::InternalServerError().json("Producto no encontrado");
@@ -39,15 +38,15 @@ pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<V
             }
         };
 
-        let cantidad_inventario = producto.get_i32("cantidad").unwrap();
+        let amount_inventory = product.get_i32("amount").unwrap();
         
-        resta = cantidad_inventario - prod.cantidad; 
+        subtract = amount_inventory - prod.amount; 
         
     }
     
-    if resta >= 0 {
+    if subtract >= 0 {
 
-        match ventas.insert_one(doc_ventas, None).await {
+        match sales.insert_one(doc_sales, None).await {
             Ok(result) => {
 
                 let id_sale = match result.inserted_id.as_object_id() {
@@ -57,7 +56,7 @@ pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<V
                     }
                 };
 
-                let sale = match ventas.find_one(doc! {"_id" : id_sale}, None).await {
+                let sale = match sales.find_one(doc! {"_id" : id_sale}, None).await {
                     Ok(Some(doc)) => { doc }
                     Ok(None) => {
                         return HttpResponse::InternalServerError().json("Venta no encontrado");
@@ -67,7 +66,7 @@ pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<V
                     }
                 };
 
-                let list_product = match sale.get_array("productos") {
+                let list_product = match sale.get_array("products") {
                     Ok(array) => { array }
                     Err(e) => {
                         return HttpResponse::InternalServerError().json(e.to_string());
@@ -76,12 +75,12 @@ pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<V
 
                 for product in list_product {
 
-                    let doc_producto = product.as_document().unwrap();
+                    let doc_product = product.as_document().unwrap();
 
-                    let nombre = doc_producto.get_str("nombre").unwrap();
-                    let cantidad_venta = doc_producto.get_i32("cantidad").unwrap();
+                    let name = doc_product.get_str("name").unwrap();
+                    let amount_sale = doc_product.get_i32("amount").unwrap();
 
-                    let prod = match productos.find_one(doc! {"nombre" : nombre}, None).await {
+                    let prod = match products.find_one(doc! {"name" : name}, None).await {
                         Ok(Some(product)) => { product }
                         Ok(None) => {
                             return HttpResponse::InternalServerError().json("Producto no encontrado");
@@ -91,12 +90,12 @@ pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<V
                         }
                     };
 
-                    let cantidad_inventario = prod.get_i32("cantidad").unwrap();
-                    let new_cantidad_inventario = cantidad_inventario - cantidad_venta;
+                    let amount_inventory = prod.get_i32("amount").unwrap();
+                    let new_amount_inventory = amount_inventory - amount_sale;
 
-                    let _ = productos.update_one(
-                        doc! {"nombre" : nombre},
-                        doc! {"$set" : { "cantidad" : new_cantidad_inventario } },
+                    let _ = products.update_one(
+                        doc! {"name" : name},
+                        doc! {"$set" : { "amount" : new_amount_inventory } },
                         None
                     ).await;
 
@@ -114,7 +113,5 @@ pub async fn register_sale(client: web::Data<mongodb::Client>, data: web::Json<V
         HttpResponse::BadRequest().json("Excede la cantidad del inventario")
         
     }
-    
-    
 
 }

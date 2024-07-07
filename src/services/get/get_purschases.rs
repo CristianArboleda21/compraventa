@@ -6,14 +6,14 @@ use futures::TryStreamExt;
 use serde_json::json;
 use tera::{Context, Tera};
 
-use crate::models::models::{ Params, IndicadorCompra };
+use crate::models::models::{ Params, IndicatorPurchase };
 use crate::routes::routes::indicadores_inversion;
 
 #[get("/indicadores/inversion/compras")]
-pub async fn compras(client: web::Data<mongodb::Client>, query: web::Query<Params>, tera: web::Data<Tera> ) -> HttpResponse {
+pub async fn purchases(client: web::Data<mongodb::Client>, query: web::Query<Params>, tera: web::Data<Tera> ) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");
-    let compras: Collection<Document> = db.collection("compras");
+    let purchases: Collection<Document> = db.collection("purchases");
     let mut context : Context = Context::new();
 
     //2024-06-01T00:00:00Z
@@ -28,7 +28,7 @@ pub async fn compras(client: web::Data<mongodb::Client>, query: web::Query<Param
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
         };
         
-        let doc : Document = doc! {"fecha_compra" : { "$gte": init_date }};
+        let doc : Document = doc! { "date_purchase" : { "$gte": init_date } };
         filter_bson = bson::to_bson(&doc).unwrap();
         
 
@@ -39,10 +39,11 @@ pub async fn compras(client: web::Data<mongodb::Client>, query: web::Query<Param
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
         };
         
-        let doc : Document = doc! {"fecha_compra" : { "$lte": end_date }};
+        let doc : Document = doc! { "date_purchase" : { "$lte": end_date } };
         filter_bson = bson::to_bson(&doc).unwrap();
 
     } else if query.date_init.clone() != "" && query.date_end.clone() != "" {
+        
         let init_date: DateTime<Utc> = match query.date_init.clone().parse() {
             Ok(param) => param,
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
@@ -53,7 +54,7 @@ pub async fn compras(client: web::Data<mongodb::Client>, query: web::Query<Param
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
         };
 
-        let doc : Document = doc! {"fecha_compra" : { "$gte": init_date, "$lte" : end_date }};
+        let doc : Document = doc! { "date_purchase" : { "$gte": init_date, "$lte" : end_date } };
         filter_bson = bson::to_bson(&doc).unwrap();
 
     };
@@ -67,54 +68,54 @@ pub async fn compras(client: web::Data<mongodb::Client>, query: web::Query<Param
         filter,
         doc! {
             "$project" : {
-                "nombre" : "$nombre",
-                "codigo" : "$codigo",
-                "cantidad" : "$cantidad",
-                "fecha_compra" : "$fecha_compra",
-                "precio_unidad" : "$precio_unidad",
-                "total_compra" : "$total_compra",
+                "name" : "$name",
+                "code" : "$code",
+                "amount" : "$amount",
+                "date_purchase" : "$date_purchase",
+                "price_unit" : "$price_unit",
+                "total_purchase" : "$total_purchase",
             }
         }
 
     ].to_vec();
 
-    let mut lista_compras = vec![];
-    let mut total_inversion : i32 = 0;
+    let mut list_purchases = vec![];
+    let mut total_investment : i32 = 0;
 
-    match compras.aggregate(pipeline, None).await {
-        Ok(mut blogs) => {
+    match purchases.aggregate(pipeline, None).await {
+        Ok(mut purchase) => {
             
-            while let Some(result) = blogs.try_next().await.expect("error") {
+            while let Some(result) = purchase.try_next().await.expect("error") {
 
-                let total_compra = match result.clone().get_i32("total_compra") {
-                    Ok(total_compra) => total_compra,
+                let total_purchase = match result.clone().get_i32("total_purchase") {
+                    Ok(total_purchase) => total_purchase,
                     Err(_) => { 
-                        return HttpResponse::InternalServerError().json("campo total_compra con formato incorrecto")
+                        return HttpResponse::InternalServerError().json("campo total_purchase con formato incorrecto")
                     }
                 };
                 
-                let nombre = result.get_str("nombre").unwrap().to_string();
-                let codigo = result.get_i32("codigo").unwrap();
-                let cantidad = result.get_i32("cantidad").unwrap();
-                let fecha = result.get_datetime("fecha_compra").unwrap().clone();
-                
-                let indicador_compra = IndicadorCompra {
-                    nombre,
-                    codigo, 
-                    cantidad,
-                    total_compra,
-                    fecha_compra: fecha
+                let name = result.get_str("name").unwrap().to_string();
+                let code = result.get_i32("code").unwrap();
+                let amount = result.get_i32("amount").unwrap();
+                let date = result.get_datetime("date_purchase").unwrap().clone();
+
+                let indicador_compra = IndicatorPurchase {
+                    name,
+                    code,
+                    amount,
+                    total_purchase,
+                    date_purchase: date
                 };
                 
-                total_inversion += total_compra;
-                lista_compras.push(indicador_compra)
+                total_investment += total_purchase;
+                list_purchases.push(indicador_compra)
 
             }
             
             HttpResponse::Ok().json(json!(
                 {
-                    "total_inversion" : total_inversion,
-                    "compras" : lista_compras
+                    "total_investment" : total_investment,
+                    "purchases" : list_purchases
                 }
             ))
             

@@ -2,24 +2,24 @@ use actix_web::{ web, put, HttpResponse, HttpRequest };
 use mongodb::{ Database, Collection, bson::{Document, doc} };
 use bson::oid::ObjectId;
 
-use crate::models::models::ActualizacionPrecioVenta;
+use crate::models::models::UpdatePriceSale;
 
 #[put("/actualizarPrecioVenta/{id}")]
-pub async fn update_price_sale(client: web::Data<mongodb::Client>, req: HttpRequest, data: web::Json<ActualizacionPrecioVenta>) -> HttpResponse {
+pub async fn update_price_sale(client: web::Data<mongodb::Client>, req: HttpRequest, data: web::Json<UpdatePriceSale>) -> HttpResponse {
     
     let db: Database = client.database("tienda_online");
-    let productos: Collection<Document> = db.collection("productos");
+    let products: Collection<Document> = db.collection("products");
 
-    let id_producto: ObjectId = match req.match_info().get("id").unwrap().parse() {
+    let id_product: ObjectId = match req.match_info().get("id").unwrap().parse() {
         Ok(id) => { id }
         Err(_) => {
             return HttpResponse::BadRequest().json("Error obteniendo el id del producto")
         }
     };
     
-    match productos.update_one(
-        doc! { "_id" : id_producto },
-        doc! { "$set" : { "precio_venta" : data.precio_venta } },
+    match products.update_one(
+        doc! { "_id" : id_product },
+        doc! { "$set" : { "price_sale" : data.price_sale } },
         None
     ).await {
         Ok(result) => {
@@ -31,7 +31,7 @@ pub async fn update_price_sale(client: web::Data<mongodb::Client>, req: HttpRequ
             }
 
         }
-        Err(e) => {
+        Err(_) => {
             HttpResponse::BadRequest().json("Error al actualizar precio de venta del producto")
         }
     }

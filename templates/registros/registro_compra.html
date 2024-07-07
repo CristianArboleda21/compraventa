@@ -19,18 +19,18 @@
             <div class="card-body">
 
                 <div class="col-lg-6 col-md-6 col-sm-12">
-                    <label for="nombre">Nombre del Producto:</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    <label for="name">Nombre del Producto:</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
                 </div>
 
                 <div class="col mt-2">
-                    <label for="cantidad">Cantidad:</label>
-                    <input type="number" class="form-control" id="cantidad" name="cantidad" required>
+                    <label for="amount">Cantidad:</label>
+                    <input type="number" class="form-control" id="amount" name="amount" required>
                 </div>
 
                 <div class="col mt-2">
-                    <label for="precio_unidad">Precio Unidad:</label>
-                    <input type="number" class="form-control" id="precio_unidad" name="precio_unidad" required>
+                    <label for="price_unit">Precio Unidad:</label>
+                    <input type="number" class="form-control" id="price_unit" name="price_unit" required>
                 </div>
 
             </div>
@@ -57,9 +57,9 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             const data = {
-                nombre: formData.get('nombre'),
-                cantidad: parseInt(formData.get('cantidad')),
-                precio_unidad: parseInt(formData.get('precio_unidad'))
+                name: formData.get('name'),
+                amount: parseInt(formData.get('amount')),
+                price_unit: parseInt(formData.get('price_unit'))
             };
 
             const response = await fetch('/registroCompra', {

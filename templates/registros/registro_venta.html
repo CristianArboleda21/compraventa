@@ -9,7 +9,7 @@
 <body>
 
     <div class="card">
-        <form id="venta-form" action="/registroVenta" method="post">
+        <form id="sale-form" action="/registroVenta" method="post">
 
             <div class="card-header">
                 <div class="d-flex justify-content-center mb-3">
@@ -19,43 +19,43 @@
 
             <div class="card-body">
 
-                <div id="productos-container">
-                    <div class="producto" style="padding: 20px">
+                <div id="products-container">
+                    <div class="product" style="padding: 20px">
                         <div class="row mb-1">
                             <div class="col-lg-6 col-md-6 col-sm-12">
-                                <label for="producto-select-1">Seleccionar Producto:</label>
-                                <select id="producto-select-1" class="producto-select form-control">
+                                <label for="product-select-1">Seleccionar Producto:</label>
+                                <select id="product-select-1" class="product-select form-control">
                                     <option value="">Selecciona un producto</option>
                                 </select>
                             </div>
 
                             <div class="col-lg-6 col-md-6 col-sm-12">
-                                <label for="nombre">Nombre del Producto:</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required readonly>
+                                <label for="name">Nombre del Producto:</label>
+                                <input type="text" class="form-control" id="name" name="name" required readonly>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col">
-                                <label for="codigo">Código:</label>
-                                <input type="number" class="form-control" id="codigo" name="codigo" required readonly>
+                                <label for="code">Código:</label>
+                                <input type="number" class="form-control" id="code" name="code" required readonly>
                             </div>
 
                             <div class="col">
-                                <label for="precio">Precio:</label>
-                                <input type="number" class="form-control" id="precio" name="precio" required readonly>
+                                <label for="price">Precio:</label>
+                                <input type="number" class="form-control" id="price" name="price" required readonly>
                             </div>
 
                             <div class="col">
-                                <label for="cantidad">Cantidad:</label>
-                                <input type="number" class="form-control cantidad" id="cantidad" name="cantidad" required>
+                                <label for="amount">Cantidad:</label>
+                                <input type="number" class="form-control amount" id="amount" name="amount" required>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-rounded btn-info" onclick="agregarProducto()">Agregar Producto</button>
+                    <button type="button" class="btn btn-rounded btn-info" onclick="addProduct()">Agregar Producto</button>
 
                     <div class="valorTotal" style="margin-left: 5%">
                         <h3>Total: $<span id="total-span"> 0</span></h3>
@@ -82,122 +82,121 @@
     <script src="/static/js/bootstrap.min.js"></script>
 
     <script>
-        async function fetchProductos() {
+        async function fetchProducts() {
             const response = await fetch('/productos');
             return response.json();
         }
 
         async function loadProducts(id) {
             const select = document.getElementById(id);
-            const products = await fetchProductos();
+            const products = await fetchProducts();
 
             products.forEach(product => {
                 const option = document.createElement('option');
                 option.value = JSON.stringify(product);
-                option.text = product.nombre;
+                option.text = product.name;
                 select.appendChild(option);
             });
         }
 
-        function agregarProducto() {
-            const container = document.getElementById('productos-container');
-            const productoDiv = document.createElement('div');
-            let idSelectNew = document.getElementsByClassName('producto-select').length + 1;
+        function addProduct() {
+            const container = document.getElementById('products-container');
+            const productDiv = document.createElement('div');
+            let idSelectNew = document.getElementsByClassName('product-select').length + 1;
 
-            productoDiv.classList.add('producto');
-            productoDiv.classList.add('row');
-            productoDiv.style.padding = "20px";
+            productDiv.classList.add('product');
+            productDiv.classList.add('row');
+            productDiv.style.padding = "20px";
 
-            productoDiv.innerHTML = `
+            productDiv.innerHTML = `
                 <div class="row mb-1">
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <label for="producto-select-${idSelectNew}">Seleccionar Producto:</label>
-                        <select id="producto-select-${idSelectNew}" class="producto-select form-control">
+                        <label for="product-select-${idSelectNew}">Seleccionar Producto:</label>
+                        <select id="product-select-${idSelectNew}" class="product-select form-control">
                             <option value="">Selecciona un producto</option>
                         </select>
                     </div>
 
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                        <label for="nombre">Nombre del Producto:</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required readonly>
+                        <label for="name">Nombre del Producto:</label>
+                        <input type="text" class="form-control" id="name" name="name" required readonly>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col">
-                        <label for="codigo">Código:</label>
-                        <input type="number" class="form-control" id="codigo" name="codigo" required readonly>
+                        <label for="code">Código:</label>
+                        <input type="number" class="form-control" id="code" name="code" required readonly>
                     </div>
 
                     <div class="col">
-                        <label for="precio">Precio:</label>
-                        <input type="number" class="form-control" id="precio" name="precio" required readonly>
+                        <label for="price">Precio:</label>
+                        <input type="number" class="form-control" id="price" name="price" required readonly>
                     </div>
 
                     <div class="col">
-                        <label for="cantidad">Cantidad:</label>
-                        <input type="number" class="form-control cantidad" id="cantidad" name="cantidad" required>
+                        <label for="amount">Cantidad:</label>
+                        <input type="number" class="form-control amount" id="amount" name="amount" required>
                     </div>
                 </div>
             `;
 
-            container.appendChild(productoDiv);
+            container.appendChild(productDiv);
 
-            loadProducts("producto-select-" + idSelectNew);
-            attachSelectListener(productoDiv);
+            loadProducts("product-select-" + idSelectNew);
+            attachSelectListener(productDiv);
         }
 
-        function attachSelectListener(productoDiv) {
-            const select = productoDiv.querySelector('.producto-select');
+        function attachSelectListener(productDiv) {
+            const select = productDiv.querySelector('.product-select');
             select.addEventListener('change', () => {
-                const selectedProducto = JSON.parse(select.value);
-                productoDiv.querySelector('[name="nombre"]').value = selectedProducto.nombre;
-                productoDiv.querySelector('[name="codigo"]').value = selectedProducto.codigo;
-                productoDiv.querySelector('[name="precio"]').value = selectedProducto.precio_venta;
+                const selectedProduct = JSON.parse(select.value);
+                productDiv.querySelector('[name="name"]').value = selectedProduct.name;
+                productDiv.querySelector('[name="code"]').value = selectedProduct.code;
+                productDiv.querySelector('[name="price"]').value = selectedProduct.price_sale;
             });
         }
 
-        document.getElementById('productos-container').addEventListener('input', (event) => {
-            if (event.target.classList.contains('cantidad')) {
-                const productos = [];
-                const productoElements = document.querySelectorAll('.producto');
+        document.getElementById('products-container').addEventListener('input', (event) => {
+            if (event.target.classList.contains('amount')) {
+                const products = [];
+                const productElements = document.querySelectorAll('.product');
 
-                productoElements.forEach((element) => {
-                    let cantidad = element.querySelector('[name="cantidad"]').value == "" ? 0 : element.querySelector('[name="cantidad"]').value;
-                    productos.push({
-                        precio: parseInt(element.querySelector('[name="precio"]').value),
-                        cantidad: parseInt(cantidad)
+                productElements.forEach((element) => {
+                    let amount = element.querySelector('[name="amount"]').value == "" ? 0 : element.querySelector('[name="amount"]').value;
+                    products.push({
+                        price: parseInt(element.querySelector('[name="price"]').value),
+                        amount: parseInt(amount)
                     });
                 });
 
-                const total = productos.reduce((total_venta, element) => total_venta + (element.precio * element.cantidad), 0);
+                const total = products.reduce((total_sale, element) => total_sale + (element.price * element.amount), 0);
 
                 document.getElementById("total-span").textContent = total;
                 document.getElementById("total").value = total;
             }
         });
 
-        document.getElementById('venta-form').addEventListener('submit', async (event) => {
+        document.getElementById('sale-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            console.log("hola");
             const formData = new FormData(event.target);
-            const productos = [];
-            const productoElements = document.querySelectorAll('.producto');
-            const total_venta = parseInt(document.getElementById("total").value);
+            const products = [];
+            const productElements = document.querySelectorAll('.product');
+            const total_sale = parseInt(document.getElementById("total").value);
 
-            productoElements.forEach((element) => {
-                productos.push({
-                    nombre: element.querySelector('[name="nombre"]').value,
-                    codigo: parseInt(element.querySelector('[name="codigo"]').value),
-                    precio: parseInt(element.querySelector('[name="precio"]').value),
-                    cantidad: parseInt(element.querySelector('[name="cantidad"]').value),
-                    total: parseInt(element.querySelector('[name="precio"]').value) * parseInt(element.querySelector('[name="cantidad"]').value)
+            productElements.forEach((element) => {
+                products.push({
+                    name: element.querySelector('[name="name"]').value,
+                    code: parseInt(element.querySelector('[name="code"]').value),
+                    price: parseInt(element.querySelector('[name="price"]').value),
+                    amount: parseInt(element.querySelector('[name="amount"]').value),
+                    total: parseInt(element.querySelector('[name="price"]').value) * parseInt(element.querySelector('[name="amount"]').value)
                 });
             });
 
             const data = {
-                productos,
-                total_venta
+                products,
+                total_sale
             };
 
             const response = await fetch('/registroVenta', {
@@ -219,8 +218,8 @@
             })
         });
 
-        loadProducts("producto-select-1");
-        attachSelectListener(document.querySelector('.producto'));
+        loadProducts("product-select-1");
+        attachSelectListener(document.querySelector('.product'));
     </script>
 </body>
 </html>

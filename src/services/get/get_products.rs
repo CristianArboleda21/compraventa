@@ -7,22 +7,22 @@ use futures::TryStreamExt;
 pub async fn products(client: web::Data<mongodb::Client>) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");
-    let productos: Collection<Document> = db.collection("productos");
+    let products: Collection<Document> = db.collection("products");
 
-    let mut lista_productos = [].to_vec();
+    let mut lista_products = [].to_vec();
 
-    match productos.find(None, None).await {
-        Ok(mut productos) => {
+    match products.find(None, None).await {
+        Ok(mut products) => {
 
-            while let Some(result) = productos.try_next().await.expect("error") {
-                lista_productos.push(result)
+            while let Some(result) = products.try_next().await.expect("error") {
+                lista_products.push(result)
             }
             
-            HttpResponse::Ok().json(lista_productos)
+            HttpResponse::Ok().json(lista_products)
 
         }
-        Err(e) => {
-            HttpResponse::InternalServerError().json(e.to_string())
+        Err(_) => {
+            HttpResponse::InternalServerError().json("Error obteniendo los productos")
         }
     }
 

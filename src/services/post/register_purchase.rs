@@ -3,67 +3,67 @@ use mongodb::{ Database, Collection, bson::{Document, doc} };
 use chrono::Utc;
 use rand::Rng;
 
-use crate::models::models::{Compras, ComprasPost, Productos};
+use crate::models::models::{Purchase, PurchasePost, Products};
 
 #[post("/registroCompra")]
-pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Json<ComprasPost>) -> HttpResponse {
+pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Json<PurchasePost>) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");
-    let productos: Collection<Document> = db.collection("productos");
-    let compras: Collection<Document> = db.collection("compras");
+    let products: Collection<Document> = db.collection("products");
+    let purchases: Collection<Document> = db.collection("purchases");
     
     let mut random = rand::thread_rng();
-    let codigo_random = random.gen_range(1000..9999);
+    let code_random = random.gen_range(1000..9999);
 
-    match productos.find_one(doc! {"nombre" : data.nombre.clone()}, None).await {
+    match products.find_one(doc! {"nombre" : data.name.clone()}, None).await {
         Ok(Some(result)) => {
 
-            let nombre: String = match result.get_str("nombre").unwrap().parse() {
-                Ok(nombre) => nombre,
+            let name: String = match result.get_str("name").unwrap().parse() {
+                Ok(name) => name,
                 Err(e) => {
                     return HttpResponse::InternalServerError().json(e.to_string());
                 }
             };
             
-            let codigo = result.get_i32("codigo").unwrap();
-            let cantidad = result.get_i32("cantidad").unwrap();
-            let suma_cantidad = cantidad + data.cantidad;
+            let code = result.get_i32("code").unwrap();
+            let amount = result.get_i32("amount").unwrap();
+            let sum_amount = amount + data.amount;
 
-            let _ = productos.update_one(
-                doc! {"nombre" : data.nombre.clone()},
-                doc! { "$set" : { "cantidad" : suma_cantidad } },
+            let _ = products.update_one(
+                doc! {"name" : data.name.clone()},
+                doc! { "$set" : { "amount" : sum_amount } },
                 None
             ).await;
 
-            let total_compra = data.precio_unidad * data.cantidad;
+            let total_purchase = data.price_unit * data.amount;
 
-            let new_compras = Compras {
-                nombre,
-                codigo,
-                cantidad: data.cantidad,
-                fecha_compra: bson::DateTime::from_chrono(Utc::now()),
-                precio_unidad: data.precio_unidad,
-                total_compra,
+            let new_purchase = Purchase {
+                name,
+                code,
+                amount: data.amount,
+                date_purchase: bson::DateTime::from_chrono(Utc::now()),
+                price_unit: data.price_unit,
+                total_purchase,
             };
 
-            let doc_compras: Document = bson::to_document(&new_compras).unwrap();
+            let doc_purchase: Document = bson::to_document(&new_purchase).unwrap();
 
-            let _ = compras.insert_one(doc_compras, None).await;
+            let _ = purchases.insert_one(doc_purchase, None).await;
 
-            HttpResponse::Ok().json("Se actualizo la cantidad de productos en el inventario y se registro la compra")
+            HttpResponse::Ok().json("Se actualizo la amount de products en el inventario y se registro la compra")
         }
         Ok(None) => {
 
-            let new_product = Productos {
-                nombre: data.nombre.clone(),
-                codigo: codigo_random,
-                cantidad: 0,
-                precio_venta: 0
+            let new_product = Products {
+                name: data.name.clone(),
+                code: code_random,
+                amount: 0,
+                price_sale: 0
             };
 
             let doc_product: Document = bson::to_document(&new_product).unwrap();
             
-            match productos.insert_one(doc_product, None).await {
+            match products.insert_one(doc_product, None).await {
                 Ok(result) => {
                     
                     let id_product = match result.inserted_id.as_object_id() {
@@ -73,7 +73,7 @@ pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Js
                         }
                     };
 
-                    let product = match productos.find_one(doc! {"_id" : id_product}, None).await {
+                    let product = match products.find_one(doc! {"_id" : id_product}, None).await {
                         Ok(Some(doc)) => { doc }
                         Ok(None) => {
                             return HttpResponse::InternalServerError().json("Producto no encontrado");
@@ -83,38 +83,38 @@ pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Js
                         }
                     };
                     
-                    let nombre: String = match product.get_str("nombre").unwrap().parse() {
-                        Ok(nombre) => nombre,
+                    let name: String = match product.get_str("name").unwrap().parse() {
+                        Ok(name) => name,
                         Err(e) => {
                             return HttpResponse::InternalServerError().json(e.to_string());
                         }
                     };
 
-                    let codigo = product.get_i32("codigo").unwrap();
+                    let code = product.get_i32("code").unwrap();
 
-                    let cantidad = product.get_i32("cantidad").unwrap();
-                    let suma_cantidad = cantidad + data.cantidad;
+                    let amount = product.get_i32("amount").unwrap();
+                    let sum_amount = amount + data.amount;
 
-                    let _ = productos.update_one(
+                    let _ = products.update_one(
                         doc! {"_id" : id_product },
-                        doc! { "$set" : { "cantidad" : suma_cantidad } },
+                        doc! { "$set" : { "amount" : sum_amount } },
                         None
                     ).await;
 
-                    let total_compra = data.precio_unidad * data.cantidad;
+                    let total_purchase = data.price_unit * data.amount;
 
-                    let new_compras = Compras {
-                        nombre,
-                        codigo,
-                        cantidad: data.cantidad,
-                        fecha_compra: bson::DateTime::from_chrono(Utc::now()),
-                        precio_unidad: data.precio_unidad,
-                        total_compra,
+                    let new_purchase = Purchase {
+                        name,
+                        code,
+                        amount: data.amount,
+                        date_purchase: bson::DateTime::from_chrono(Utc::now()),
+                        price_unit: data.price_unit,
+                        total_purchase,
                     };
 
-                    let doc_compras: Document = bson::to_document(&new_compras).unwrap();
+                    let doc_purchase: Document = bson::to_document(&new_purchase).unwrap();
 
-                    let _ = compras.insert_one(doc_compras, None).await;
+                    let _ = purchases.insert_one(doc_purchase, None).await;
                     
                     HttpResponse::Ok().json("Producto creado y compra registrada")
                 }

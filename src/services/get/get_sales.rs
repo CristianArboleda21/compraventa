@@ -5,14 +5,14 @@ use chrono::{DateTime, Utc};
 use futures::TryStreamExt;
 use serde_json::json;
 
-use crate::models::models::{ Params, IndicadorCompra };
+use crate::models::models::{ Params, IndicatorSale };
 use crate::routes::routes::indicadores_inversion;
 
-#[get("/indicadores/ventasCompras")]
-pub async fn ventas(client: web::Data<mongodb::Client>, query: web::Query<Params>) -> HttpResponse {
+#[get("/indicadores/ventasProductos")]
+pub async fn sales(client: web::Data<mongodb::Client>, query: web::Query<Params>) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");
-    let ventas: Collection<Document> = db.collection("ventas");
+    let sales: Collection<Document> = db.collection("sales");
 
     //2024-06-01T00:00:00Z
     //2024-06-15T00:00:00Z
@@ -26,7 +26,7 @@ pub async fn ventas(client: web::Data<mongodb::Client>, query: web::Query<Params
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
         };
 
-        let doc : Document = doc! {"fecha_venta" : { "$gte": init_date }};
+        let doc : Document = doc! { "date_sale" : { "$gte": init_date } };
         filter_bson = bson::to_bson(&doc).unwrap();
 
 
@@ -37,7 +37,7 @@ pub async fn ventas(client: web::Data<mongodb::Client>, query: web::Query<Params
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
         };
 
-        let doc : Document = doc! {"fecha_venta" : { "$lte": end_date }};
+        let doc : Document = doc! {"date_sale" : { "$lte": end_date }};
         filter_bson = bson::to_bson(&doc).unwrap();
 
     } else if query.date_init.clone() != "" && query.date_end.clone() != "" {
@@ -51,7 +51,7 @@ pub async fn ventas(client: web::Data<mongodb::Client>, query: web::Query<Params
             Err(_) => return HttpResponse::InternalServerError().json("Formato de fecha incorrecta")
         };
 
-        let doc : Document = doc! {"fecha_venta" : { "$gte": init_date, "$lte" : end_date }};
+        let doc : Document = doc! {"date_sale" : { "$gte": init_date, "$lte" : end_date }};
         filter_bson = bson::to_bson(&doc).unwrap();
 
     };
@@ -65,32 +65,32 @@ pub async fn ventas(client: web::Data<mongodb::Client>, query: web::Query<Params
         doc! {
             "$project" : {
                 "_id" : "$_id",
-                "productos" : "$productos",
-                "codigo_venta" : "$codigo_venta",
-                "fecha_venta" : "$fecha_venta",
-                "total_venta" : "$total_venta",
+                "products" : "$products",
+                "code_sale" : "$code_sale",
+                "date_sale" : "$date_sale",
+                "total_sale" : "$total_sale",
             }
         }
     ].to_vec();
     
 
-    let mut lista_ventas = vec![];
-    let mut new_total_ventas : i32 = 0;
+    let mut list_sales = vec![];
+    let mut new_total_sales : i32 = 0;
 
-    match ventas.aggregate(pipeline, None).await {
-        Ok(mut blogs) => {
+    match sales.aggregate(pipeline, None).await {
+        Ok(mut sales) => {
 
-            while let Some(result) = blogs.try_next().await.expect("error") {
+            while let Some(result) = sales.try_next().await.expect("error") {
                 
-                let total_ventas = result.get_i32("total_venta").unwrap();
-                new_total_ventas += total_ventas;
-                lista_ventas.push(result)
+                let total_sale = result.get_i32("total_sale").unwrap();
+                new_total_sales += total_sale;
+                list_sales.push(result)
             }
 
             HttpResponse::Ok().json(json!(
                 {
-                    "total_ventas" : new_total_ventas,
-                    "ventas" : lista_ventas
+                    "total_sales" : new_total_sales,
+                    "sales" : list_sales
                 }
             ))
 

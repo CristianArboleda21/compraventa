@@ -7,21 +7,21 @@ use mongodb::{ Database, Collection, bson::{Document, doc} };
 pub async fn sale_by_id(client: web::Data<mongodb::Client>, req: HttpRequest) -> HttpResponse {
 
     let db: Database = client.database("tienda_online");
-    let ventas: Collection<Document> = db.collection("ventas");
+    let sales: Collection<Document> = db.collection("sales");
 
-    let id_venta: ObjectId = match req.match_info().get("id").unwrap().parse() {
+    let id_sale: ObjectId = match req.match_info().get("id").unwrap().parse() {
         Ok(id) => { id }
         Err(_) => {
             return HttpResponse::BadRequest().json("Error en el id que envio")
         }
     };
     
-    match ventas.find_one(doc! {"_id" : id_venta}, None).await {
-        Ok(Some(ventas)) => {
-            HttpResponse::Ok().json(ventas)
+    match sales.find_one(doc! {"_id" : id_sale}, None).await {
+        Ok(Some(sales)) => {
+            HttpResponse::Ok().json(sales)
         }
         Ok(None) => {
-            HttpResponse::NotFound().json("Esta venda no existe")
+            HttpResponse::NotFound().json("Esta venta no existe")
         }
         Err(e) => {
             HttpResponse::InternalServerError().json("Error buscando la venta")

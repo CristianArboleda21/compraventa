@@ -18,12 +18,10 @@ use crate::services::post::register_sale::register_sale;
 use crate::services::update::update_price_sale::update_price_sale;
 use crate::services::get::inventory::inventory;
 use crate::services::get::get_products::products;
-use crate::services::get::get_purschases::compras;
-use crate::services::get::get_sales::ventas;
+use crate::services::get::get_purschases::purchases;
+use crate::services::get::get_sales::sales;
 use crate::services::get::get_sale_by_id::sale_by_id;
 mod models;
-mod utils;
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -51,8 +49,8 @@ async fn main() -> std::io::Result<()> {
             .service(inventory)
             .service(update_price_sale)
             .service(products)
-            .service(compras)
-            .service(ventas)
+            .service(purchases)
+            .service(sales)
             .service(sale_by_id)
             
             .service(index)

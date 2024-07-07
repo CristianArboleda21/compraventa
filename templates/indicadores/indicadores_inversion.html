@@ -18,18 +18,18 @@
                 <div class="row">
                     <div class="col">
                         <label>Fecha inicial: </label>
-                        <input type="date" id="fecha_inicial" class="form-control">
+                        <input type="date" id="date_init" class="form-control">
                     </div>
 
                     <div class="col">
                         <label>Fecha final: </label>
-                        <input type="date" id="fecha_final" class="form-control">
+                        <input type="date" id="date_end" class="form-control">
                     </div>
                 </div>
             </div>
 
             <div class="card-footer text-center">
-                <button class="btn btn-rounded btn-success" id="btn-consultar" onclick="fetchCompras()">Consultar</button>
+                <button class="btn btn-rounded btn-success" id="btn-search" onclick="fetchPurchases()">Consultar</button>
             </div>
         </div>
 
@@ -63,29 +63,27 @@
 
     <script>
 
-        async function fetchCompras() {
+        async function fetchPurchases() {
 
-            let date_init = document.getElementById("fecha_inicial").value != "" ? document.getElementById("fecha_inicial").value + "T00:00:00Z" : "";
-            let date_end = document.getElementById("fecha_final").value != "" ? document.getElementById("fecha_final").value + "T23:59:59Z" : "";
+            let date_init = document.getElementById("date_init").value != "" ? document.getElementById("date_init").value + "T00:00:00Z" : "";
+            let date_end = document.getElementById("date_end").value != "" ? document.getElementById("date_end").value + "T23:59:59Z" : "";
 
             const response = await fetch('/indicadores/inversion/compras?date_init='+date_init+'&date_end='+date_end);
-            //return response.json();
             const data = await response.json();
-            console.log(data);
             let bodyTable = '';
 
-            data.compras.forEach(resp => {
+            data.purchases.forEach(resp => {
 
-                let date = new Date(parseInt(resp.fecha_compra.$date.$numberLong, 10));
-                date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay();
+                let date = new Date(parseInt(resp.date_purchase.$date.$numberLong));
+                date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
 
                 bodyTable += `
                     <tr>
-                        <td>${resp.nombre}</td>
-                        <td>${resp.codigo}</td>
-                        <td>${resp.cantidad}</td>
+                        <td>${resp.name}</td>
+                        <td>${resp.code}</td>
+                        <td>${resp.amount}</td>
                         <td>${date}</td>
-                        <td>${resp.total_compra}</td>
+                        <td>${resp.total_purchase}</td>
                     </tr>
                 `;
             })
@@ -96,13 +94,12 @@
                     <td></td>
                     <td></td>
                     <td>Total:</td>
-                    <td style="color: #35a817">${data.total_inversion}</td>
+                    <td style="color: #35a817">${data.total_investment}</td>
                 </tr>
             `;
 
             document.getElementById("body-table").innerHTML = bodyTable;
 
-            console.log(data);
         }
 
 
