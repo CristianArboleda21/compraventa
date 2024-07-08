@@ -29,7 +29,7 @@
             </div>
 
             <div class="card-footer text-center">
-                <button class="btn btn-rounded btn-success" id="btn-search" onclick="fetchPurchases()">Consultar</button>
+                <button class="btn-css" id="btn-search" onclick="fetchPurchases()">Consultar</button>
             </div>
         </div>
 
@@ -52,14 +52,9 @@
 
     <div class="text-center mt-3">
         <a href="/indicadores">
-            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+            <button type="submit"  class="btn-css">Volver</button>
         </a>
     </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-
 
     <script>
 
@@ -94,7 +89,9 @@
                     <td></td>
                     <td></td>
                     <td>Total:</td>
-                    <td style="color: #35a817">${data.total_investment}</td>
+                    <td style="color: #35a817; display: flex; justify-content: center; align-items: center">
+                        ${data.total_investment} <iconify-icon icon="fluent-mdl2:money" width="24" height="24"  style="color: #1f8b1d; margin-left: 5px"></iconify-icon>
+                    </td>
                 </tr>
             `;
 
@@ -104,6 +101,10 @@
 
 
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js"></script>
 
 </body>
 </html>

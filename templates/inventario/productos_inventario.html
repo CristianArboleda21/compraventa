@@ -13,28 +13,40 @@
 
         <div class="card-header mt-3 text-center">
             <h1 class="jumbotron-heading">Inventario</h1>
-        </div>
 
-        <div class="card-body text-center">
-            <div class="row d-flex justify-content-center">
+            <div class="d-flex justify-content-around mt-3 mb-1">
+                <a href="/registros/registrarCompra" class="text-decoration-none">
+                    <button type="submit" class="btn-css">Agregar compra</button>
+                </a>
 
-                {% for prod in products %}
-                    <div class="card col-3 m-2 p-3">
-                        <h3>Nombre: {{ prod.name }}</h3>
-                        <h3>Codigo: {{ prod.code }}</h3>
-                        <h3>Cantidad: {{ prod.amount }}</h3>
-                        <h3>Precio: {{ prod.price_sale }}</h3>
-                    </div>
-                {% endfor %}
+                <a href="/inventario/registroProd">
+                    <button type="submit" class="btn-css">Agregar producto</button>
+                </a>
 
+                <a href="/inventario">
+                    <button type="submit"  class="btn-css">Volver</button>
+                </a>
             </div>
         </div>
 
-        <div class="card-footer">
-            <div class="text-center mb-4">
-                <a href="/inventario">
-                    <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
-                </a>
+
+        <div class="card-body">
+            <div class="row d-flex justify-content-center">
+
+                {% for prod in products %}
+                    <div id="inventory" class="card col-3 m-1 p-3">
+                        <div class="card-header text-center">
+                            <h3>{{ prod.name }}</h3>
+                        </div>
+
+                        <div class="card-body">
+                            <p><b>Código:</b> {{ prod.code }}</p>
+                            <p><b>Cantidad:</b> {{ prod.amount }}</p>
+                            <p><b>Precio:</b> {{ prod.price_sale }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
             </div>
         </div>
 

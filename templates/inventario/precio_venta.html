@@ -57,7 +57,7 @@
             </div>
 
             <div class="card-footer text-center">
-                <button type="submit"  class="btn btn-rounded btn-success">Actualizar Precio</button>
+                <button type="submit"  class="btn-css">Actualizar Precio</button>
             </div>
 
         </form>
@@ -66,13 +66,15 @@
 
     <div class="text-center mt-3">
         <a href="/inventario">
-            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+            <button type="submit"  class="btn-css">Volver</button>
         </a>
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
+    <div class="d-flex justify-content-end m-3">
+        <a href="/inventario/productosInventario">
+            <button type="submit" class="btn-css">Ir a inventario</button>
+        </a>
+    </div>
 
     <script>
         async function fetchProducts() {
@@ -132,5 +134,9 @@
         fetchProducts();
         loadProducts("product-select");
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
 </body>
 </html>

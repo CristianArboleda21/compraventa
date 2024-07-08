@@ -29,7 +29,7 @@
             </div>
 
             <div class="card-footer text-center">
-                <button class="btn btn-rounded btn-success" id="btn-search" onclick="tableSales()">Consultar</button>
+                <button class="btn-css" id="btn-search" onclick="tableSales()">Consultar</button>
             </div>
         </div>
 
@@ -40,6 +40,7 @@
                     <th scope="col">Códogo de venta</th>
                     <th scope="col">Fecha de Venta</th>
                     <th scope="col">Total Venta</th>
+                    <th scope="col">Detalle Venta</th>
                 </tr>
                 </thead>
 
@@ -50,7 +51,7 @@
 
     <div class="text-center mt-3">
         <a href="/indicadores">
-            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+            <button type="submit"  class="btn-css">Volver</button>
         </a>
     </div>
 
@@ -77,7 +78,7 @@
                 </div>
 
                 <div class="col-12 d-flex justify-content-center mb-auto">
-                    <table class="table table-striped text-center" id="table-modal" aria-describedby="table-indicator">
+                    <table class="table table-striped text-center m-4" id="table-modal" aria-describedby="table-indicator">
                         <thead>
                         <tr>
                             <th scope="col">Nombre</th>
@@ -95,98 +96,99 @@
         </div>
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-
-
     <script>
+        async function fetchSales() {
+            let date_init = document.getElementById("date_init").value != "" ? document.getElementById("date_init").value + "T00:00:00Z" : "";
+            let date_end = document.getElementById("date_end").value != "" ? document.getElementById("date_end").value + "T23:59:59Z" : "";
 
-    async function fetchSales() {
-        let date_init = document.getElementById("date_init").value != "" ? document.getElementById("date_init").value + "T00:00:00Z" : "";
-        let date_end = document.getElementById("date_end").value != "" ? document.getElementById("date_end").value + "T23:59:59Z" : "";
+            const response = await fetch('/indicadores/ventasProductos?date_init='+date_init+'&date_end='+date_end);
+            return  response.json();
+        }
 
-        const response = await fetch('/indicadores/ventasProductos?date_init='+date_init+'&date_end='+date_end);
-        return  response.json();
-    }
+        async function tableSales() {
 
-    async function tableSales() {
+            const data = await fetchSales();
+            let bodyTable = '';
 
-        const data = await fetchSales();
-        let bodyTable = '';
+            data.sales.forEach(resp => {
 
-        data.sales.forEach(resp => {
+                let date = new Date(parseInt(resp.date_sale.$date.$numberLong, 10));
+                date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+                console.log(date);
 
-            let date = new Date(parseInt(resp.date_sale.$date.$numberLong, 10));
-            date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-            console.log(date);
+                bodyTable += `
+                        <tr>
+                            <td>${resp.code_sale}</td>
+                            <td>${date}</td>
+                            <td>${resp.total_sale}</td>
+                            <td>
+                                <button class="btn-css" data-bs-toggle="modal" data-bs-target="#Modal" onclick="modal('${resp._id.$oid}')">Ver detalle</button>
+                            </td>
+                        </tr>
+                    `;
+
+            })
 
             bodyTable += `
                     <tr>
-                        <td>${resp.code_sale}</td>
-                        <td>${date}</td>
-                        <td>${resp.total_sale}</td>
-                        <td>
-                            <button class="btn btn-rounded btn-primary" data-bs-toggle="modal" data-bs-target="#Modal" onclick="modal('${resp._id.$oid}')">Ver detalle</button>
+                        <td></td>
+                        <td>Total:</td>
+                        <td style="color: #35a817; display: flex; justify-content: center; align-items: center">
+                            ${data.total_sales} <iconify-icon icon="fluent-mdl2:money" width="24" height="24"  style="color: #1f8b1d; margin-left: 5px"></iconify-icon>
+                        </td>
+                        <td>&nbsp</td>
+                    </tr>
+                `;
+
+            document.getElementById("body-table").innerHTML = bodyTable;
+        }
+
+        async function modal(id_sale) {
+
+            const response = await fetch('/ventaById/' + id_sale);
+            const data = await response.json();
+
+            document.getElementById("code_sale").value = data.code_sale;
+            let date = new Date(parseInt(data.date_sale.$date.$numberLong));
+            date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+            document.getElementById("date_sale").value = date;
+
+            let bodyTableModal = '';
+
+            data.products.forEach(resp => {
+
+                    bodyTableModal += `
+                        <tr>
+                            <td>${resp.name}</td>
+                            <td>${resp.code}</td>
+                            <td>${resp.price}</td>
+                            <td>${resp.amount}</td>
+                            <td>${resp.total}</td>
+                        </tr>
+                    `;
+
+            })
+
+            bodyTableModal += `
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Total:</td>
+                        <td style="color: #35a817; display: flex; justify-content: center; align-items: center">
+                            ${data.total_sale} <iconify-icon icon="fluent-mdl2:money" width="24" height="24"  style="color: #1f8b1d; margin-left: 5px"></iconify-icon>
                         </td>
                     </tr>
                 `;
 
-        })
+            document.getElementById("body-table-modal").innerHTML = bodyTableModal;
 
-        bodyTable += `
-                <tr>
-                    <td></td>
-                    <td>Total:</td>
-                    <td style="color: #35a817">${data.total_sales}</td>
-                </tr>
-            `;
+        }
 
-        document.getElementById("body-table").innerHTML = bodyTable;
-    }
+    </script>
 
-    async function modal(id_sale) {
-
-        const response = await fetch('/ventaById/' + id_sale);
-        const data = await response.json();
-
-        document.getElementById("code_sale").value = data.code_sale;
-        let date = new Date(parseInt(data.date_sale.$date.$numberLong));
-        date = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-        document.getElementById("date_sale").value = date;
-
-        let bodyTableModal = '';
-
-        data.products.forEach(resp => {
-
-                bodyTableModal += `
-                    <tr>
-                        <td>${resp.name}</td>
-                        <td>${resp.code}</td>
-                        <td>${resp.price}</td>
-                        <td>${resp.amount}</td>
-                        <td>${resp.total}</td>
-                    </tr>
-                `;
-
-        })
-
-        bodyTableModal += `
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>Total:</td>
-                    <td style="color: #35a817">${data.total_sale}</td>
-                </tr>
-            `;
-
-        document.getElementById("body-table-modal").innerHTML = bodyTableModal;
-
-    }
-
-
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js"></script>
 </body>
 </html>

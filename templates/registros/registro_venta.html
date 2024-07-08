@@ -55,10 +55,13 @@
                 </div>
 
                 <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-rounded btn-info" onclick="addProduct()">Agregar Producto</button>
+                    <button type="button" class="btn-css" onclick="addProduct()">Agregar Producto</button>
 
                     <div class="valorTotal" style="margin-left: 5%">
-                        <h3>Total: $<span id="total-span"> 0</span></h3>
+                        <h3 style="display: flex; justify-content: center; align-items: center">
+                            Total: <iconify-icon icon="fluent-mdl2:money" width="24" height="24"  style="color: #1f8b1d; margin-left: 20px; margin-right: 10px"></iconify-icon>
+                            <span id="total-span" style="margin-left: 2px"> 0</span>
+                        </h3>
                         <input type="hidden" id="total" name="total">
                     </div>
                 </div>
@@ -66,7 +69,9 @@
             </div>
 
             <div class="card-footer text-center">
-                <button type="submit" class="btn btn-rounded btn-success">Registrar Venta</button>
+                    <button type="submit" class="btn-css">
+                        Registrar Venta
+                    </button>
             </div>
 
         </form>
@@ -74,12 +79,9 @@
 
     <div class="text-center mt-3">
         <a href="/registros">
-            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+            <button type="submit" class="btn-css">Volver</button>
         </a>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
 
     <script>
         async function fetchProducts() {
@@ -103,40 +105,52 @@
             const container = document.getElementById('products-container');
             const productDiv = document.createElement('div');
             let idSelectNew = document.getElementsByClassName('product-select').length + 1;
+            const idDivNew = 'div-' + idSelectNew;
 
             productDiv.classList.add('product');
+            productDiv.id = idDivNew;
             productDiv.classList.add('row');
             productDiv.style.padding = "20px";
 
             productDiv.innerHTML = `
-                <div class="row mb-1">
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                        <label for="product-select-${idSelectNew}">Seleccionar Producto:</label>
-                        <select id="product-select-${idSelectNew}" class="product-select form-control">
-                            <option value="">Selecciona un producto</option>
-                        </select>
+                <div class="row d-flex justify-content-center align-items-center">
+                    <div class="col-11">
+                        <div class="row mb-1">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="product-select-${idSelectNew}">Seleccionar Producto:</label>
+                                <select id="product-select-${idSelectNew}" class="product-select form-control">
+                                    <option value="">Selecciona un producto</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label for="name">Nombre del Producto:</label>
+                                <input type="text" class="form-control" id="name" name="name" required readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <label for="code">Código:</label>
+                                <input type="number" class="form-control" id="code" name="code" required readonly>
+                            </div>
+
+                            <div class="col">
+                                <label for="price">Precio:</label>
+                                <input type="number" class="form-control" id="price" name="price" required readonly>
+                            </div>
+
+                            <div class="col">
+                                <label for="amount">Cantidad:</label>
+                                <input type="number" class="form-control amount" id="amount" name="amount" required>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-lg-6 col-md-6 col-sm-12">
-                        <label for="name">Nombre del Producto:</label>
-                        <input type="text" class="form-control" id="name" name="name" required readonly>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col">
-                        <label for="code">Código:</label>
-                        <input type="number" class="form-control" id="code" name="code" required readonly>
-                    </div>
-
-                    <div class="col">
-                        <label for="price">Precio:</label>
-                        <input type="number" class="form-control" id="price" name="price" required readonly>
-                    </div>
-
-                    <div class="col">
-                        <label for="amount">Cantidad:</label>
-                        <input type="number" class="form-control amount" id="amount" name="amount" required>
+                    <div class="col-1">
+                        <button style="background-color: transparent; border: none" onclick="deleteProduct('${idDivNew}', event)">
+                            <iconify-icon icon="ic:baseline-delete" width="24" height="24"  style="color: #be0909"></iconify-icon>
+                        </button>
                     </div>
                 </div>
             `;
@@ -145,6 +159,11 @@
 
             loadProducts("product-select-" + idSelectNew);
             attachSelectListener(productDiv);
+        }
+
+        function deleteProduct(idDiv, e) {
+            e.preventDefault();
+            document.getElementById(idDiv).remove();
         }
 
         function attachSelectListener(productDiv) {
@@ -221,5 +240,10 @@
         loadProducts("product-select-1");
         attachSelectListener(document.querySelector('.product'));
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@2.1.0/dist/iconify-icon.min.js"></script>
+
 </body>
 </html>

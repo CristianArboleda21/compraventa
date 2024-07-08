@@ -36,7 +36,7 @@
             </div>
 
             <div class="card-footer text-center">
-                <button type="submit" class="btn btn-rounded btn-success">Registrar Compra</button>
+                <button type="submit" class="btn-css">Registrar Compra</button>
             </div>
 
         </form>
@@ -45,12 +45,15 @@
 
     <div class="text-center mt-3">
         <a href="/registros">
-            <button type="submit"  class="btn btn-rounded btn-info">Volver</button>
+            <button type="submit"  class="btn-css">Volver</button>
         </a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
+    <div class="d-flex justify-content-end m-3">
+        <a href="/inventario/productosInventario">
+            <button type="submit" class="btn-css">Ir a inventario</button>
+        </a>
+    </div>
 
     <script>
         document.getElementById('purchase-form').addEventListener('submit', async (event) => {
@@ -106,5 +109,9 @@
 
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
 </body>
 </html>

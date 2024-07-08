@@ -1,3 +1,16 @@
+body {
+    display: flex;
+    justify-content: center;
+    background-color: rgba(207, 206, 206, 0.89);
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
 .btn {
     box-shadow: 2px 2px 2px 1px #7f7f7f !important;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
@@ -8,43 +21,40 @@
     box-shadow: 4px 3px 3px 2px #4e4e4e !important;
 }
 
+.btn-css {
+    background-color: black;
+    color: white;
+    border-radius: 8px;
+}
+
+.btn-css:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 4px 3px 3px 2px #4e4e4e !important;
+}
+
 .card {
     max-width: 70% !important;
     margin-top: 5% !important;
     margin-bottom: 5% !important;
 }
 
-body {
-    display: flex;
-    justify-content: center;
-}
-
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
-}
-
-#card-1 {
+#inventory {
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 200px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    max-width: 70% !important;
+    margin-top: 5% !important;
+    margin-bottom: 5% !important;
 }
 
-#card-2 {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 200px;
-    transition: transform 0.2s, box-shadow 0.2s;
+#inventory:hover {
+    background-color: #242222;
+    color: white;
+    max-width: 70% !important;
+    margin-top: 5% !important;
+    margin-bottom: 5% !important;
 }
 
-#card-3 {
+#card-1, #card-2, #card-3 {
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -54,5 +64,12 @@ body {
 }
 
 #card-1:hover, #card-2:hover, #card-3:hover {
-    background-color: #0dcaf0;
+    background-color: #5d5d5d;
+    color: white;
+}
+
+#card-1:hover iconify-icon,
+#card-2:hover iconify-icon,
+#card-3:hover iconify-icon {
+    color: white !important;
 }
