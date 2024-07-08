@@ -15,7 +15,7 @@ pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Js
     let mut random = rand::thread_rng();
     let code_random = random.gen_range(1000..9999);
 
-    match products.find_one(doc! {"nombre" : data.name.clone()}, None).await {
+    match products.find_one(doc! {"name" : data.name.clone()}, None).await {
         Ok(Some(result)) => {
 
             let name: String = match result.get_str("name").unwrap().parse() {
@@ -50,7 +50,7 @@ pub async fn register_purchase(client: web::Data<mongodb::Client>, data: web::Js
 
             let _ = purchases.insert_one(doc_purchase, None).await;
 
-            HttpResponse::Ok().json("Se actualizo la amount de products en el inventario y se registro la compra")
+            HttpResponse::Ok().json("Se actualizo la cantidad de productos en el inventario y se registro la compra")
         }
         Ok(None) => {
 

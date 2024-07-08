@@ -41,7 +41,13 @@
 
                         <div class="card-body">
                             <p><b>Código:</b> {{ prod.code }}</p>
-                            <p><b>Cantidad:</b> {{ prod.amount }}</p>
+
+                            {% if prod.amount == 0 %}
+                                <p><b>Cantidad:</b> No hay unidades disponibles</p>
+                            {% else %}
+                                <p><b>Cantidad:</b> {{ prod.amount }}</p>
+                            {% endif %}
+
                             <p><b>Precio:</b> {{ prod.price_sale }}</p>
                         </div>
                     </div>
